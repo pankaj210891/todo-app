@@ -13,15 +13,25 @@ app.use(express.json());
 
 const PORT = process.env.PORT || 3000;
 
-connectToDB().then(() => {
-  app.use("/api/auth", authRoutes);
-  app.use("/api/todos", todoRoutes);
+// Connect DB ONCE per cold start
+connectToDB();
 
-  if (process.env.VERCEL !== "true") {
-    app.listen(PORT, () => {
-      console.log(`Server running on port ${PORT}`);
-    });
-  }
+app.use("/auth", authRoutes);
+app.use("/todo", todoRoutes);
+
+app.get("/", (req, res) => {
+  res.send("Todo API running 🚀");
 });
+
+// connectToDB().then(() => {
+//   app.use("/api/auth", authRoutes);
+//   app.use("/api/todos", todoRoutes);
+
+//   if (process.env.VERCEL !== "true") {
+//     app.listen(PORT, () => {
+//       console.log(`Server running on port ${PORT}`);
+//     });
+//   }
+// });
 
 export default app;
