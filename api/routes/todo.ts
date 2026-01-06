@@ -36,7 +36,7 @@ router.get('/', authMiddleware, async (req: AuthRequest, res) => {
 // Create a new todo
 router.post('/', authMiddleware, async (req: AuthRequest, res) => {
   try {
-    const { title, completed = false } = req.body;
+    const { title, body, completed = false } = req.body;
     if (!title) return res.status(400).json({ message: 'Title is required' });
 
     const todo = new Todo({ title, completed, userId: req.user!.id });
@@ -51,10 +51,10 @@ router.post('/', authMiddleware, async (req: AuthRequest, res) => {
 // Update existing todo
 router.put('/:id', authMiddleware, async (req: AuthRequest, res) => {
   try {
-    const { title, completed } = req.body;
+    const { title, body, completed } = req.body;
     const todo = await Todo.findOneAndUpdate(
       { _id: req.params.id, userId: req.user!.id },
-      { ...(title !== undefined && { title }), ...(completed !== undefined && { completed }) },
+      { ...(title !== undefined && { title }), ...(completed !== undefined && { completed }) },...(body !== undefined && { body }) },
       { new: true }
     );
     if (!todo) return res.status(404).json({ message: 'Todo not found' });
