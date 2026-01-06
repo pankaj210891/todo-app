@@ -38,8 +38,9 @@ router.post('/', authMiddleware, async (req: AuthRequest, res) => {
   try {
     const { title, body, completed = false } = req.body;
     if (!title) return res.status(400).json({ message: 'Title is required' });
+    if (!body) return res.status(400).json({ message: 'Body is required' });
 
-    const todo = new Todo({ title, completed, userId: req.user!.id });
+    const todo = new Todo({ title, body, completed, userId: req.user!.id });
     await todo.save();
     res.status(201).json(todo);
   } catch (error) {
@@ -54,7 +55,7 @@ router.put('/:id', authMiddleware, async (req: AuthRequest, res) => {
     const { title, body, completed } = req.body;
     const todo = await Todo.findOneAndUpdate(
       { _id: req.params.id, userId: req.user!.id },
-      { ...(title !== undefined && { title }), ...(completed !== undefined && { completed }) },...(body !== undefined && { body }) },
+      { ...(title !== undefined && { title }), ...(completed !== undefined && { completed }), ...(body !== undefined && { body }) },
       { new: true }
     );
     if (!todo) return res.status(404).json({ message: 'Todo not found' });
